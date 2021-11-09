@@ -6,58 +6,17 @@
 #include "main.h"
 
 
-class owner{
-public:
-    owner():name("Unknown"), pin(-1111){}
-    owner(string iName):name(iName), pin(-1111){}
-    owner(string iName, int iPin):name(iName), pin(iPin){}
-    owner(string iName, int iPin, map<string, double> iAccounts):name(iName), pin(iPin), accounts(iAccounts){}
-    
-    string getName(void)const{return name;}
-    int getPin(void)const{return pin;}
-    map<string, double> getAccounts(void)const{return accounts;}
-    double getAcctAmt(string name){return accounts[name];}
-    void withdrawAmt(string name, double amt){accounts[name] -= amt;}
-    
-    void setName(string iName){name = iName;}
-    
-    void insertAcct(string type, double ammt){
-        accounts[type] = ammt;
-    };
-    
-    void removeAcct(string type){
-        accounts.erase(type);
-    }
-    
-    bool findAcct(string type){
-        if(accounts.find(type) == accounts.end()){
-            return false;
-        }
-        return true;
-    }
-    
-    void displayAccts(void){
-        for(auto eachItem : accounts){
-            cout << eachItem.first << ": " << eachItem.second << endl;
-        }
-    }
-    
-private:
-    string name;
-    int pin;
-    map<string, double> accounts;
-};
-
-
 Status initialize(vector<owner>& Owners);
 Status end(const vector<owner> Owners);
 void clear(void);
+
 Status createUser(vector<owner>& Owners);
 Status createAcct(vector<owner>& Owners);
 Status deleteAcct(vector<owner>& Owners);
 Status withdrawFromAcct(vector<owner>& Owners);
-
+Status depositToAcct(vector<owner>& Owners);
 Status deleteUser(vector<owner>& Owners);
+Status checkAcct(vector<owner> &Owners);
 
 
 // ################ MAIN ###################################################
@@ -70,8 +29,6 @@ int main(int argc, const char * argv[]) {
     }
     
     
-    
-
     while(decision != 0){
         do{
             cout << "What would you like to do?\nSign Up(1)\nCreate an account(2)\nDelete an account(3)\nWithdraw(4)\nDeposit(5)\nDelete User(6)\nCheck Acct(7)\nExit(0)\n::";
@@ -97,7 +54,7 @@ int main(int argc, const char * argv[]) {
                 clear();
                 break;
             case 5:
-                cout << "write this\n";
+                depositToAcct(Owners);
                 clear();
                 break;
             case 6:
@@ -105,7 +62,7 @@ int main(int argc, const char * argv[]) {
                 clear();
                 break;
             case 7:
-                cout << "Write this\n";
+                checkAcct(Owners);
                 clear();
             default:
                 break;
@@ -191,6 +148,7 @@ void clear(void){
     cout << "\n\n\n";
 }
 
+
 Status createUser(vector<owner>& Owners){
     string name;
     int pin;
@@ -235,7 +193,6 @@ Status createUser(vector<owner>& Owners){
     
     return SUCCESS;
 }
-
 
 
 Status createAcct(vector<owner>& Owners){
@@ -294,8 +251,6 @@ Status createAcct(vector<owner>& Owners){
     }else{
         Owners.at(index).insertAcct(AcctNames[acctType - 1], startAmt);
     }
-
-
     
     return SUCCESS;
 }
@@ -401,7 +356,6 @@ Status withdrawFromAcct(vector<owner>& Owners){
         cin.ignore();
     }while(acctType > 3 || acctType < 0);
     
-    
 
     if(Owners.at(index).findAcct(AcctNames[acctType - 1])){
         curAmmt = Owners.at(index).getAcctAmt(AcctNames[acctType - 1]);
@@ -424,18 +378,70 @@ Status withdrawFromAcct(vector<owner>& Owners){
 }
 
 
+Status depositToAcct(vector<owner>& Owners){
+    string name;
+    int index = 0;
+    int pin;
+    vector<owner> tempOwners;
+    int acctType;
+    double curAmmt, depositAmount;
+    
+    cin.ignore();
+    cout << "What is your name on record: ";
+    getline(cin, name);
+    
 
-
-
-
-
-
-
-
-
-
-
-
+    for (auto eachOwner : Owners){
+        if(eachOwner.getName() == name){
+            tempOwners.push_back(eachOwner);
+        }
+    }
+    
+    cout << "What is your pin: ";
+    cin >> pin;
+    cin.ignore();
+    
+    vector<owner>::iterator currentOwner;
+    currentOwner = tempOwners.begin();
+    
+    if(tempOwners.size() != 0){
+        while( currentOwner != tempOwners.end() && currentOwner->getPin() != pin){
+            currentOwner++;
+            index++;
+        }
+    }
+    
+    if(currentOwner == tempOwners.end() || tempOwners.size() == 0){
+        cout << "No account with this name and pin exist...\n";
+        return FAILURE;
+    }
+    
+    do{
+        cout << "What account would you like to deposit into?\n" << AcctNames[0] << "(1)\n"<< AcctNames[1] <<"(2)\n"<< AcctNames[2]<< "(3)\nCancel(0)\n:: ";
+        cin >> acctType;
+        cin.ignore();
+    }while(acctType > 3 || acctType < 0);
+    
+    
+    if(Owners.at(index).findAcct(AcctNames[acctType - 1])){
+        curAmmt = Owners.at(index).getAcctAmt(AcctNames[acctType - 1]);
+        do{
+            cout << "You currently have $" << curAmmt << ". How much would you like to deposit?: ";
+            cin >> depositAmount;
+            cin.ignore();
+        }while(depositAmount < 0);
+        
+        Owners.at(index).depositAmt(AcctNames[acctType - 1], depositAmount);
+        
+        cout << "You now have $" << Owners.at(index).getAcctAmt(AcctNames[acctType - 1]) << " in your " << AcctNames[acctType - 1] << " account.\n";
+        
+    }else{
+        cout << "You do not have a " << AcctNames[acctType - 1] << " account\n";
+        return FAILURE;
+    }
+    
+    return SUCCESS;
+}
 
 
 Status deleteUser(vector<owner>& Owners){
@@ -485,6 +491,60 @@ Status deleteUser(vector<owner>& Owners){
             cout << eachAcct.first << ": " << eachAcct.second;
         }
         Owners.erase(Owners.begin() + index);
+    }
+    
+    return SUCCESS;
+}
+
+
+Status checkAcct(vector<owner> &Owners){
+    string name;
+    vector<owner> tempOwners;
+    int pin;
+    int index = 0;
+    int acctType;
+    
+    cin.ignore();
+    cout << "What is your name on record: ";
+    getline(cin, name);
+    
+
+    for (auto eachOwner : Owners){
+        if(eachOwner.getName() == name){
+            tempOwners.push_back(eachOwner);
+        }
+    }
+    
+    cout << "What is your pin: ";
+    cin >> pin;
+    cin.ignore();
+    
+    vector<owner>::iterator currentOwner;
+    currentOwner = tempOwners.begin();
+    
+    if(tempOwners.size() != 0){
+        while( currentOwner != tempOwners.end() && currentOwner->getPin() != pin){
+            currentOwner++;
+            index++;
+        }
+    }
+    
+    if(currentOwner == tempOwners.end() || tempOwners.size() == 0){
+        cout << "No account with this name and pin exist...\n";
+        return FAILURE;
+    }
+    
+    do{
+        cout << "What account would you like to check?\n" << AcctNames[0] << "(1)\n"<< AcctNames[1] <<"(2)\n"<< AcctNames[2]<< "(3)\nCancel(0)\n:: ";
+        cin >> acctType;
+        cin.ignore();
+    }while(acctType > 3 || acctType < 0);
+    
+    if(Owners.at(index).findAcct(AcctNames[acctType - 1])){
+        cout << "You have $" << Owners.at(index).getAcctAmt(AcctNames[acctType-1]) << " in your " << AcctNames[acctType - 1] << " account.\n";
+    }else{
+        cout <<"You do not have a " << AcctNames[acctType - 1] << " account\n";
+        return FAILURE;
     }
     
     return SUCCESS;

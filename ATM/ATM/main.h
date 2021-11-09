@@ -23,3 +23,50 @@ enum status{FAILURE, SUCCESS};
 typedef enum status Status;
 
 
+
+class owner{
+public:
+    owner():name("Unknown"), pin(-1111){}
+    owner(string iName):name(iName), pin(-1111){}
+    owner(string iName, int iPin):name(iName), pin(iPin){}
+    owner(string iName, int iPin, map<string, double> iAccounts):name(iName), pin(iPin), accounts(iAccounts){}
+    
+    string getName(void)const{return name;}
+    int getPin(void)const{return pin;}
+    map<string, double> getAccounts(void)const{return accounts;}
+    double getAcctAmt(string name){return accounts[name];}
+    void withdrawAmt(string name, double amt){accounts[name] -= amt;}
+    void depositAmt(string name, double amt){accounts[name] += amt;}
+    
+    void setName(string iName){name = iName;}
+    
+    void insertAcct(string type, double ammt){
+        accounts[type] = ammt;
+    };
+    
+    void removeAcct(string type){
+        accounts.erase(type);
+    }
+    
+    bool findAcct(string type){
+        if(accounts.find(type) == accounts.end()){
+            return false;
+        }
+        return true;
+    }
+    
+    void displayAccts(void){
+        for(auto eachItem : accounts){
+            cout << eachItem.first << ": " << eachItem.second << endl;
+        }
+    }
+    
+private:
+    string name;
+    int pin;
+    map<string, double> accounts;
+};
+
+//Make a check pin/user function
+//Check what accounts they have first and only display those options instead of canceling if they pick the wrong thing
+//overload the << operator and fix all functions
