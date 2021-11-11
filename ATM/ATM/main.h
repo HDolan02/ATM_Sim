@@ -60,6 +60,8 @@ public:
             cout << eachItem.first << ": " << eachItem.second << endl;
         }
     }
+
+    friend bool lessThan(owner left, owner right);
     
 private:
     string name;
@@ -67,6 +69,12 @@ private:
     map<string, double> accounts;
 };
 
+
+bool lessThan(owner left, owner right){
+    return left.name < right.name;
+}
+
 //Make a check pin/user function
 //Check what accounts they have first and only display those options instead of canceling if they pick the wrong thing
 //overload the << operator and fix all functions
+//after deleting account, if the user has no more accounts, delete the user?
