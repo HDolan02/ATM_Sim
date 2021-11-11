@@ -5,11 +5,12 @@
 #include <vector>
 #include "main.h"
 
-
+//Global functions used by the system
 Status initialize(vector<owner>& Owners);
 Status end(const vector<owner> Owners);
 void clear(void);
 
+//Modifier functions which help the program control and modify the Vector of Account Owners
 Status createUser(vector<owner>& Owners);
 Status createAcct(vector<owner>& Owners);
 Status deleteAcct(vector<owner>& Owners);
@@ -17,7 +18,6 @@ Status withdrawFromAcct(vector<owner>& Owners);
 Status depositToAcct(vector<owner>& Owners);
 Status deleteUser(vector<owner>& Owners);
 Status checkAcct(vector<owner> &Owners);
-
 Status checkPin_User(vector<owner>& Owners, int& index);
 
 
@@ -31,6 +31,7 @@ int main(int argc, const char * argv[]) {
     }
     
     
+    //Follow commands given by the user until the program is asked to turn off
     while(decision != 0){
         do{
             cout << "What would you like to do?\nSign Up(1)\nCreate an account(2)\nDelete an account(3)\nWithdraw(4)\nDeposit(5)\nDelete User(6)\nCheck Acct(7)\nExit(0)\n::";
@@ -41,7 +42,7 @@ int main(int argc, const char * argv[]) {
         switch (decision) {
             case 1:
                 createUser(Owners);
-                std::sort(Owners.begin(), Owners.end(), lessThan);
+                sort(Owners.begin(), Owners.end(), lessThan);
                 clear();
                 break;
             case 2:
@@ -74,6 +75,7 @@ int main(int argc, const char * argv[]) {
     }
     
     
+    //When the program ends, output all information to the output file
     if(!end(Owners)){
         exit(1);
     }
@@ -83,7 +85,9 @@ int main(int argc, const char * argv[]) {
 
 
 
-
+//Function takes the unititalized vector of Owners
+//The function reads each user and their corresponding information from the input file and stores the information in the Owners Vector
+//The function returns a Status to represent a successfull initialization or a failed initialization
 Status initialize(vector<owner>& Owners){
     int numOwners;
     string firstName;
@@ -123,6 +127,9 @@ Status initialize(vector<owner>& Owners){
 }
 
 
+//The function takes the Owners Vector after the user has asked to end the program
+//All of the information found in the Owners Vector is printed to the output file in the same format as the input file
+//The function returns a Status to represent the success or failure of the ending process
 Status end(const vector<owner> Owners){
     ofstream outFile;
     outFile.open(oFile, ofstream::out);
@@ -147,11 +154,15 @@ Status end(const vector<owner> Owners){
 }
 
 
+//This function prints a given number of newlines to the screen to clear/space out the information on the screen
 void clear(void){
     cout << "\n\n\n";
 }
 
 
+//This function takes the Owners Vector
+//The function prompts the user for their name and the pin that they would like to use in the future for login and stores the infromation in the Owners Vector
+//The function returns a Status which represents the sucess or failure of the insert
 Status createUser(vector<owner>& Owners){
     string name;
     int pin;
@@ -197,13 +208,17 @@ Status createUser(vector<owner>& Owners){
     return SUCCESS;
 }
 
-
+//This function takes the Owners Vector
+//The Function has the user login and then asks what account they would like to create
+//The function returns a status that represents a successful/failed login and creation
 Status createAcct(vector<owner>& Owners){
     int acctType;
     int startAmt = -1;
     int index = 0;
 
-    checkPin_User(Owners, index);
+    if(!checkPin_User(Owners, index)){
+        return FAILURE;
+    }
     
     do{
         cout << "What account would you like?\n" << AcctNames[0] << "(1)\n"<< AcctNames[1] <<"(2)\n"<< AcctNames[2]<< "(3)\nCancel(0)\n:: ";;
@@ -219,6 +234,7 @@ Status createAcct(vector<owner>& Owners){
     
     if(Owners.at(index).findAcct(AcctNames[acctType - 1])){
         cout << "You already have a "<< AcctNames[acctType - 1] <<" account with us...";
+        return FAILURE;
     }else{
         Owners.at(index).insertAcct(AcctNames[acctType - 1], startAmt);
     }
@@ -226,12 +242,16 @@ Status createAcct(vector<owner>& Owners){
     return SUCCESS;
 }
 
-
+//This function takes the Owners Vector
+//The Function has the user login and then asks what account they would like to delete
+//The Function returns a Status that represents the success/failure of login and deletion
 Status deleteAcct(vector<owner>& Owners){
     int index = 0;
     int acctType;
     
-    checkPin_User(Owners, index);
+    if(!checkPin_User(Owners, index)){
+        return FAILURE;
+    }
     
     do{
         cout << "What account would you like to delete?\n" << AcctNames[0] << "(1)\n"<< AcctNames[1] <<"(2)\n"<< AcctNames[2]<< "(3)\nCancel(0)\n:: ";;
@@ -246,18 +266,24 @@ Status deleteAcct(vector<owner>& Owners){
         Owners.at(index).removeAcct(AcctNames[acctType - 1]);
     }else{
         cout << "You do not have this account\n";
+        return FAILURE;
     }
 
     return SUCCESS;
 }
 
 
+//This function takes the Owners Vector
+//The Function has the user login and then asks what account they would like to withdraw from
+//The Function returns a Status that represents the success/failure of login and withdrawl
 Status withdrawFromAcct(vector<owner>& Owners){
     int index = 0;
     int acctType;
     double curAmmt, withdrawAmt;
 
-    checkPin_User(Owners, index);
+    if(!checkPin_User(Owners, index)){
+        return FAILURE;
+    }
     
     do{
         cout << "What account would you like to withdraw from?\n" << AcctNames[0] << "(1)\n"<< AcctNames[1] <<"(2)\n"<< AcctNames[2]<< "(3)\nCancel(0)\n:: ";
@@ -287,12 +313,17 @@ Status withdrawFromAcct(vector<owner>& Owners){
 }
 
 
+//This function takes the Owners Vector
+//The Function has the user login and then asks what account they would like to deposit into
+//The Function returns a Status that represents the success/failure of login and deposit
 Status depositToAcct(vector<owner>& Owners){
     int index = 0;
     int acctType;
     double curAmmt, depositAmount;
     
-    checkPin_User(Owners, index);
+    if(!checkPin_User(Owners, index)){
+        return FAILURE;
+    }
     
     do{
         cout << "What account would you like to deposit into?\n" << AcctNames[0] << "(1)\n"<< AcctNames[1] <<"(2)\n"<< AcctNames[2]<< "(3)\nCancel(0)\n:: ";
@@ -322,6 +353,9 @@ Status depositToAcct(vector<owner>& Owners){
 }
 
 
+//This function takes the Owners Vector
+//The Function has the user login and then checks that the user actually wants to delete there entire account
+//The Function returns a Status that represents the success/failure of login and deletion
 Status deleteUser(vector<owner>& Owners){
     string name;
     vector<owner> tempOwners;
@@ -375,11 +409,16 @@ Status deleteUser(vector<owner>& Owners){
 }
 
 
+//This function takes the Owners Vector
+//The Function has the user login and then asks what account they would like to check
+//The Function returns a Status that represents the success/failure of login and checking of the account
 Status checkAcct(vector<owner> &Owners){
     int index = 0;
     int acctType;
 
-    checkPin_User(Owners, index);
+    if(!checkPin_User(Owners, index)){
+        return FAILURE;
+    }
     
     do{
         cout << "What account would you like to check?\n" << AcctNames[0] << "(1)\n"<< AcctNames[1] <<"(2)\n"<< AcctNames[2]<< "(3)\nCancel(0)\n:: ";
@@ -397,9 +436,9 @@ Status checkAcct(vector<owner> &Owners){
     return SUCCESS;
 }
 
-
-
-
+//This function takes the Owners Vector and an index passed by reference
+//The function asks for the users name and login pin and checks that they are correct
+//At the end of the function, the index should be the index in the Owners Vector of that user and the function will return a Status that represents the success/failure of login
 Status checkPin_User(vector<owner>& Owners, int& index){
     string name;
     int pin;

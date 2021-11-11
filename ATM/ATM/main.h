@@ -13,41 +13,33 @@ using std::ofstream;
 using std::getline;
 using std::map;
 using std::vector;
+using std::sort;
 
 
-
+//Global string variables for the input file name, output file name, and all account names
 const string iFile = "input.txt";
 const string oFile = "/Users/hayden/Library/Mobile Documents/com~apple~CloudDocs/Coding/C++ programs/ATM_Sim/ATM/ATM/output.txt";
 const string AcctNames[] = {"Checking", "Savings", "Roth-IRA"};
+
+//Status variable which allows for for an easy check on the result of each function call
 enum status{FAILURE, SUCCESS};
 typedef enum status Status;
 
 
-
+//Owner class holds the owners name, pin for login, and all of the users accounts
 class owner{
 public:
+    //Constructors
     owner():name("Unknown"), pin(-1111){}
     owner(string iName):name(iName), pin(-1111){}
     owner(string iName, int iPin):name(iName), pin(iPin){}
     owner(string iName, int iPin, map<string, double> iAccounts):name(iName), pin(iPin), accounts(iAccounts){}
     
+    //Accessors
     string getName(void)const{return name;}
     int getPin(void)const{return pin;}
     map<string, double> getAccounts(void)const{return accounts;}
     double getAcctAmt(string name){return accounts[name];}
-    void withdrawAmt(string name, double amt){accounts[name] -= amt;}
-    void depositAmt(string name, double amt){accounts[name] += amt;}
-    
-    void setName(string iName){name = iName;}
-    
-    void insertAcct(string type, double ammt){
-        accounts[type] = ammt;
-    };
-    
-    void removeAcct(string type){
-        accounts.erase(type);
-    }
-    
     bool findAcct(string type){
         if(accounts.find(type) == accounts.end()){
             return false;
@@ -55,12 +47,25 @@ public:
         return true;
     }
     
+    //Modifiers
+    void withdrawAmt(string name, double amt){accounts[name] -= amt;}
+    void depositAmt(string name, double amt){accounts[name] += amt;}
+    void setName(string iName){name = iName;}
+    void insertAcct(string type, double ammt){
+        accounts[type] = ammt;
+    };
+    void removeAcct(string type){
+        accounts.erase(type);
+    }
+    
+    //Other Member Functions
     void displayAccts(void){
         for(auto eachItem : accounts){
             cout << eachItem.first << ": " << eachItem.second << endl;
         }
     }
 
+    //Friend function that allows for the lessThan evaluation
     friend bool lessThan(owner left, owner right);
     
 private:
@@ -69,12 +74,15 @@ private:
     map<string, double> accounts;
 };
 
-
+//Function takes two owner objects
+//The function evaluates if the names are currently in alphabetical order
+//Returns the result of the evaluation
 bool lessThan(owner left, owner right){
     return left.name < right.name;
 }
 
-//Make a check pin/user function
+
 //Check what accounts they have first and only display those options instead of canceling if they pick the wrong thing
 //overload the << operator and fix all functions
 //after deleting account, if the user has no more accounts, delete the user?
+//when you go to add a User, check that the pin has not already been used before
