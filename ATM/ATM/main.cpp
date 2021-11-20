@@ -196,7 +196,6 @@ Status createUser(vector<owner>& Owners){
     int acctType;
     double startAmt = -1;
 
-    cin.ignore();
     cout << "Please enter your full name: ";
     getline(cin, name);
     cout << "Please enter the pin that you would like to use: ";
@@ -396,31 +395,40 @@ Status deleteUser(vector<owner>& Owners){
     int stillDel;
     int index = 0;
     
-    cin.ignore();
     cout << "What is your name on record: ";
     getline(cin, name);
-    
 
+
+//    for (auto eachOwner : Owners){
+//        if(eachOwner.getName() == name){
+//            tempOwners.push_back(eachOwner);
+//        }
+//    }
     for (auto eachOwner : Owners){
         if(eachOwner.getName() == name){
             tempOwners.push_back(eachOwner);
+        }else{
+            if(tempOwners.empty()){
+                index++;
+            }
         }
     }
-    
+
     cout << "What is your pin: ";
     cin >> pin;
     cin.ignore();
+
     
     vector<owner>::iterator currentOwner;
     currentOwner = tempOwners.begin();
-    
+
     if(tempOwners.size() != 0){
         while( currentOwner != tempOwners.end() && currentOwner->getPin() != pin){
             currentOwner++;
             index++;
         }
     }
-    
+
     if(currentOwner == tempOwners.end() || tempOwners.size() == 0){
         cout << "No account with this name and pin exist...\n";
         return FAILURE;
@@ -544,17 +552,6 @@ Status trasferToAcct(vector<owner> &Owners){
     
     return SUCCESS;
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 

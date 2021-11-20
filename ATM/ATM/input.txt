@@ -1,4 +1,9 @@
 3
+David Saint
+1212
+1
+Checking
+800
 Hayden Dolan
 2222
 3
@@ -8,9 +13,6 @@ Roth-IRA
 20000
 Savings
 100765
-Sam Smith
-2002
-0
 Tyler Fanuele
 1234
 2
