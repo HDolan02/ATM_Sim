@@ -20,12 +20,16 @@ Status withdrawFromAcct(vector<owner>& Owners);
 Status depositToAcct(vector<owner>& Owners);
 Status deleteUser(vector<owner>& Owners);
 Status checkAcct(vector<owner> &Owners);
+Status transferToOwner(vector<owner> &Owners);
+Status trasferToAcct(vector<owner> &Owners);
+
 Status checkPin_User(vector<owner>& Owners, int& index);
 
 
 // ################ MAIN ###################################################
 int main(int argc, const char * argv[]) {
     int decision = -1;
+    int transfer = 0;
     
     vector<owner> Owners;   // a vector of owner classes that contains each account owner and their information
     if(!initialize(Owners)){
@@ -36,9 +40,21 @@ int main(int argc, const char * argv[]) {
     //Follow commands given by the user until the program is asked to turn off
     while(decision != 0){
         do{
-            cout << "What would you like to do?\nSign Up(1)\nCreate an account(2)\nDelete an account(3)\nWithdraw(4)\nDeposit(5)\nDelete User(6)\nCheck Acct(7)\nExit(0)\n::";
+            cout << "What would you like to do?\nSign Up(1)\nCreate an account(2)\nDelete an account(3)\nWithdraw(4)\nDeposit(5)\nDelete User(6)\nCheck Acct(7)\nTransfer(8)\nExit(0)\n::";
             cin >> decision;
-        }while(decision > 7 || decision < 0);
+            cin.ignore();
+        }while(decision > 8 || decision < 0);
+        
+        if(decision == 8){
+            do{
+                cout << "Would you like to transfer to one of your account's or someone elses account? (1-Your Acct, 2-Other's Acct): ";
+                cin >> transfer;
+                cin.ignore();
+            }while(transfer != 1 && transfer != 2);
+            if(transfer == 1){
+                decision++;
+            }
+        }
         
         
         switch (decision) {
@@ -70,6 +86,15 @@ int main(int argc, const char * argv[]) {
             case 7:
                 checkAcct(Owners);
                 clear();
+                break;
+            case 8:
+                transferToOwner(Owners);
+                clear();
+                break;
+            case 9:
+                trasferToAcct(Owners);
+                clear();
+                break;
             default:
                 break;
         }
@@ -444,6 +469,95 @@ Status checkAcct(vector<owner> &Owners){
     return SUCCESS;
 }
 
+
+
+
+
+
+
+
+
+
+Status transferToOwner(vector<owner> &Owners){
+    int index = 0;
+    
+    
+    if(!checkPin_User(Owners, index)){
+        return FAILURE;
+    }
+    
+    cout << "UNFINISHED";
+    
+    return FAILURE;
+}
+
+
+
+//This funcion takes the Owners vector
+//The function has the user login and asks what accounts they would like to make the transfer with
+//The function transferes the desired amount to the appropriate account and then returns a status that represents a successful login and transfer
+Status trasferToAcct(vector<owner> &Owners){
+    int index = 0;
+    int acctType1, acctType2;
+    double curAmmt, transferAmt;
+    
+    if(!checkPin_User(Owners, index)){
+        return FAILURE;
+    }
+    
+    do{
+        cout << "What account would you like to move money out of?\n" << AcctNames[0] << "(1)\n"<< AcctNames[1] <<"(2)\n"<< AcctNames[2]<< "(3)\nCancel(0)\n:: ";
+        cin >> acctType1;
+        cin.ignore();
+    }while(acctType1 > 3 || acctType1 < 0);
+    
+    
+    do{
+        cout << "What account would you like to move money into?\n" << AcctNames[0] << "(1)\n"<< AcctNames[1] <<"(2)\n"<< AcctNames[2]<< "(3)\nCancel(0)\n:: ";
+        cin >> acctType2;
+        cin.ignore();
+    }while(acctType2 > 3 || acctType2 < 0);
+    
+    
+    if(Owners.at(index).findAcct(AcctNames[acctType1 - 1]) || Owners.at(index).findAcct(AcctNames[acctType2 - 1])){
+        curAmmt = Owners.at(index).getAcctAmt(AcctNames[acctType1 - 1]);
+        do{
+            cout << "You have $" << curAmmt << " in your " << AcctNames[acctType1 - 1] << " account. How much would you like to transfer?: ";
+            cin >> transferAmt;
+            cin.ignore();
+        }while(transferAmt > curAmmt || transferAmt < 0);
+        
+        Owners.at(index).withdrawAmt(AcctNames[acctType1 - 1], transferAmt);
+        Owners.at(index).depositAmt(AcctNames[acctType2 - 1], transferAmt);
+        
+        cout << "After transfering, the account balences are as follows:\n" << AcctNames[acctType1 - 1] << ": $" << Owners.at(index).getAcctAmt(AcctNames[acctType1 - 1]) << endl << AcctNames[acctType2 - 1] << ": $" << Owners.at(index).getAcctAmt(AcctNames[acctType2 - 1]);
+        
+        
+    }else if(!Owners.at(index).findAcct(AcctNames[acctType1 - 1])){
+        cout <<"You do not have a " << AcctNames[acctType1 - 1] << " account\n";
+        return FAILURE;
+    }else{
+        cout << "You do not have a " << AcctNames[acctType2 - 1] << " account\n";
+        return FAILURE;
+    }
+    
+    
+    return SUCCESS;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //This function takes the Owners Vector and an index passed by reference
 //The function asks for the users name and login pin and checks that they are correct
 //At the end of the function, the index should be the index in the Owners Vector of that user and the function will return a Status that represents the success/failure of login
@@ -452,7 +566,7 @@ Status checkPin_User(vector<owner>& Owners, int& index){
     int pin;
     vector<owner> tempOwners;
     
-    cin.ignore();
+    //cin.ignore();
     cout << "What is your name on record: ";
     getline(cin, name);
     
@@ -488,5 +602,7 @@ Status checkPin_User(vector<owner>& Owners, int& index){
     
     return SUCCESS;
 }
+
+
 
 

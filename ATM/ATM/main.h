@@ -18,7 +18,7 @@ using std::sort;
 
 //Global string variables for the input file name, output file name, and all account names
 const string iFile = "input.txt";
-const string oFile = "input.txt";
+const string oFile = "/Users/hayden/Library/Mobile Documents/com~apple~CloudDocs/Coding/C++ programs/ATM_Sim/ATM/ATM/input.txt";
 const string AcctNames[] = {"Checking", "Savings", "Roth-IRA"};
 
 //Status variable which allows for for an easy check on the result of each function call
@@ -93,6 +93,5 @@ bool operator == (const owner &left, const owner &right){
 //Check what accounts they have first and only display those options instead of canceling if they pick the wrong thing
 //overload the << operator and fix all functions
 //after deleting account, if the user has no more accounts, delete the user?
-//when you go to add a User, check that the pin has not already been used before
 //Transfering between accounts
 //Create user interface
