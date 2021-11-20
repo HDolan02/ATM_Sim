@@ -1,13 +1,16 @@
-2
+3
 Hayden Dolan
 2222
 3
 Checking
 12345
-Savings
-98765
 Roth-IRA
 20000
+Savings
+98765
+Sam Smith
+2002
+0
 Tyler Fanuele
 1234
 2
@@ -15,4 +18,3 @@ Checking
 100
 Savings
 300
-

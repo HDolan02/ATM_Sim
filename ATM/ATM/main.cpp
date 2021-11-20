@@ -3,7 +3,9 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <algorithm>
 #include "main.h"
+
 
 //Global functions used by the system
 Status initialize(vector<owner>& Owners);
@@ -42,7 +44,7 @@ int main(int argc, const char * argv[]) {
         switch (decision) {
             case 1:
                 createUser(Owners);
-                sort(Owners.begin(), Owners.end(), lessThan);
+                sort(Owners.begin(), Owners.end());
                 clear();
                 break;
             case 2:
@@ -175,6 +177,12 @@ Status createUser(vector<owner>& Owners){
     cout << "Please enter the pin that you would like to use: ";
     cin >> pin;
     cin.ignore();
+    
+    while(find(Owners.begin(), Owners.end(), owner(pin)) != Owners.end()){
+        cout << "Pin is already taken...\nPlease enter the pin that you would like to use: ";
+        cin >> pin;
+        cin.ignore();
+    }
     
     owner tmpOwner(name, pin);
     Owners.push_back(owner(name, pin));
@@ -480,3 +488,5 @@ Status checkPin_User(vector<owner>& Owners, int& index){
     
     return SUCCESS;
 }
+
+

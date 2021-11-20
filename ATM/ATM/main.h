@@ -18,7 +18,7 @@ using std::sort;
 
 //Global string variables for the input file name, output file name, and all account names
 const string iFile = "input.txt";
-const string oFile = "/Users/hayden/Library/Mobile Documents/com~apple~CloudDocs/Coding/C++ programs/ATM_Sim/ATM/ATM/output.txt";
+const string oFile = "input.txt";
 const string AcctNames[] = {"Checking", "Savings", "Roth-IRA"};
 
 //Status variable which allows for for an easy check on the result of each function call
@@ -32,6 +32,7 @@ public:
     //Constructors
     owner():name("Unknown"), pin(-1111){}
     owner(string iName):name(iName), pin(-1111){}
+    owner(int iPin):name("Unknown"), pin(iPin){}
     owner(string iName, int iPin):name(iName), pin(iPin){}
     owner(string iName, int iPin, map<string, double> iAccounts):name(iName), pin(iPin), accounts(iAccounts){}
     
@@ -65,8 +66,10 @@ public:
         }
     }
 
-    //Friend function that allows for the lessThan evaluation
-    friend bool lessThan(owner left, owner right);
+    //Operator overload
+    friend bool operator < (const owner &left, const owner &right);
+    friend bool operator == (const owner &left, const owner &right);
+    
     
 private:
     string name;
@@ -74,11 +77,16 @@ private:
     map<string, double> accounts;
 };
 
-//Function takes two owner objects
-//The function evaluates if the names are currently in alphabetical order
+//Operator takes two owner objects
+//The operator evaluates if the names are currently in alphabetical order
 //Returns the result of the evaluation
-bool lessThan(owner left, owner right){
+bool operator < (const owner &left, const owner &right){
     return left.name < right.name;
+}
+
+
+bool operator == (const owner &left, const owner &right){
+    return left.pin == right.pin;
 }
 
 
@@ -86,3 +94,5 @@ bool lessThan(owner left, owner right){
 //overload the << operator and fix all functions
 //after deleting account, if the user has no more accounts, delete the user?
 //when you go to add a User, check that the pin has not already been used before
+//Transfering between accounts
+//Create user interface
