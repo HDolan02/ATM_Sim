@@ -18,7 +18,7 @@ using std::sort;
 
 //Global string variables for the input file name, output file name, and all account names
 const string iFile = "input.txt";
-const string oFile = "input.txt";
+const string oFile = "/Users/hayden/Library/Mobile Documents/com~apple~CloudDocs/Coding/C++ programs/ATM_Sim/ATM/ATM/input.txt";
 const string AcctNames[] = {"Checking", "Savings", "Roth-IRA"};
 
 //Status variable which allows for for an easy check on the result of each function call
@@ -47,6 +47,7 @@ public:
         }
         return true;
     }
+    bool isEmpty(){return accounts.empty();}
     
     //Modifiers
     void withdrawAmt(string name, double amt){accounts[name] -= amt;}

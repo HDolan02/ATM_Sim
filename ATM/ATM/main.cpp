@@ -19,6 +19,7 @@ Status deleteAcct(vector<owner>& Owners);
 Status withdrawFromAcct(vector<owner>& Owners);
 Status depositToAcct(vector<owner>& Owners);
 Status deleteUser(vector<owner>& Owners);
+Status deleteUser(vector<owner> &Owners, string name, int pin);
 Status checkAcct(vector<owner> &Owners);
 Status transferToOwner(vector<owner> &Owners);
 Status trasferToAcct(vector<owner> &Owners);
@@ -280,6 +281,7 @@ Status createAcct(vector<owner>& Owners){
 Status deleteAcct(vector<owner>& Owners){
     int index = 0;
     int acctType;
+    int willDelete;
     
     if(!checkPin_User(Owners, index)){
         return FAILURE;
@@ -299,6 +301,16 @@ Status deleteAcct(vector<owner>& Owners){
     }else{
         cout << "You do not have this account\n";
         return FAILURE;
+    }
+    
+    if(Owners.at(index).isEmpty()){
+        do{
+            cout << "\nThere are no accounts left for this user...\nWould you like to remeove this user? (1 = yes, 2 = no): ";
+            cin >> willDelete;
+        }while(willDelete != 1 && willDelete != 2);
+        if(willDelete){
+            deleteUser(Owners, Owners.at(index).getName(), Owners.at(index).getPin());
+        }
     }
 
     return SUCCESS;
@@ -398,12 +410,6 @@ Status deleteUser(vector<owner>& Owners){
     cout << "What is your name on record: ";
     getline(cin, name);
 
-
-//    for (auto eachOwner : Owners){
-//        if(eachOwner.getName() == name){
-//            tempOwners.push_back(eachOwner);
-//        }
-//    }
     for (auto eachOwner : Owners){
         if(eachOwner.getName() == name){
             tempOwners.push_back(eachOwner);
@@ -433,16 +439,62 @@ Status deleteUser(vector<owner>& Owners){
         cout << "No account with this name and pin exist...\n";
         return FAILURE;
     }
-    
+
     cout << "Are you sure you want to delete your account?(1 = yes, 0 = no): ";
     cin >> stillDel;
     cin.ignore();
-    
+
     if(stillDel){
         cout << "\n\nReturning: ";
         for(auto eachAcct : currentOwner->getAccounts()){
             cout << eachAcct.first << ": " << eachAcct.second;
         }
+        Owners.erase(Owners.begin() + index);
+    }
+    
+    return SUCCESS;
+}
+
+
+
+//This function takes the Owners vector, the user's name and pin
+//The function deletes the given user from the Owner's vector
+//The function returns a status that represents a successful delete
+Status deleteUser(vector<owner> &Owners, string name, int pin){
+    vector<owner> tempOwners;
+    int stillDel;
+    int index = 0;
+
+    for (auto eachOwner : Owners){
+        if(eachOwner.getName() == name){
+            tempOwners.push_back(eachOwner);
+        }else{
+            if(tempOwners.empty()){
+                index++;
+            }
+        }
+    }
+
+    vector<owner>::iterator currentOwner;
+    currentOwner = tempOwners.begin();
+
+    if(tempOwners.size() != 0){
+        while( currentOwner != tempOwners.end() && currentOwner->getPin() != pin){
+            currentOwner++;
+            index++;
+        }
+    }
+
+    if(currentOwner == tempOwners.end() || tempOwners.size() == 0){
+        cout << "No account with this name and pin exist...\n";
+        return FAILURE;
+    }
+
+    cout << "Are you sure you want to delete your account?(1 = yes, 0 = no): ";
+    cin >> stillDel;
+    cin.ignore();
+
+    if(stillDel){
         Owners.erase(Owners.begin() + index);
     }
     
