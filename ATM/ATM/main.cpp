@@ -23,9 +23,10 @@ Status deleteUser(vector<owner> &Owners, string name, int pin);
 Status checkAcct(vector<owner> &Owners);
 Status transferToOwner(vector<owner> &Owners);
 Status trasferToAcct(vector<owner> &Owners);
-
 Status checkPin_User(vector<owner>& Owners, int& index);
 
+bool find_user(vector<owner> Owners, const string& name);
+int check_user_Accounts(vector<owner> Owners, const string& name, const int acct);
 
 // ################ MAIN ###################################################
 int main(int argc, const char * argv[]) {
@@ -537,18 +538,57 @@ Status checkAcct(vector<owner> &Owners){
 
 
 
-
+//This function takes the Owners Vector
+//The function has the user login, asks where the money should be transfered, and how much should be transfered
+//The function transfers the desired amount and to the requested account and then returns the status to represent a successful login/transfer
 Status transferToOwner(vector<owner> &Owners){
     int index = 0;
-    
+    int acctType1, acctType2;
+    string transfer_name;
+    int other_user_index;
+    double amount;
     
     if(!checkPin_User(Owners, index)){
         return FAILURE;
     }
     
-    cout << "UNFINISHED";
     
-    return FAILURE;
+    do{
+        cout << "What account would you like to move money out of?\n" << AcctNames[0] << "(1)\n"<< AcctNames[1] <<"(2)\n"<< AcctNames[2]<< "(3)\nCancel(0)\n:: ";
+        cin >> acctType1;
+        cin.ignore();
+    }while(acctType1 > 3 || acctType1 < 0);
+    
+    
+    do{
+        cout << "What is the name of the other person on file?: ";
+        getline(cin, transfer_name);
+    }while(!find_user(Owners, transfer_name));
+    
+    
+    do{
+        cout << "What account would you like to to transfer the money into?\n" << AcctNames[0] << "(1)\n"<< AcctNames[1] <<"(2)\n"<< AcctNames[2]<< "(3)\nCancel(0)\n:: ";
+        cin >> acctType2;
+        cin.ignore();
+        other_user_index = check_user_Accounts(Owners, transfer_name, acctType2-1);
+        if(other_user_index < 0){
+            cout << "This user does not have that account type\n";
+        }
+    }while(other_user_index < 0);
+    
+    
+    do{
+        cout << "How much would you like to transfer?: ";
+        cin >> amount;
+        cin.ignore();
+    }while(amount < 0 || amount > Owners[index].getAcctAmt(AcctNames[acctType1-1]));
+    
+    Owners[index].withdrawAmt(AcctNames[acctType1-1], amount);
+    Owners[other_user_index].depositAmt(AcctNames[acctType2-1], amount);
+    
+    cout << "You have " << Owners[index].getAcctAmt(AcctNames[acctType1-1]) << " remaining in your " << AcctNames[acctType1-1] << "account";
+    
+    return SUCCESS;
 }
 
 
@@ -654,4 +694,32 @@ Status checkPin_User(vector<owner>& Owners, int& index){
 
 
 
+
+//This function takes the Owners vector and the name of the desired owner
+//The function searches the Owners vector for the desired name
+//The function returns true if the desired name is found and false otherwise
+bool find_user(vector<owner> Owners, const string& name){
+    for(owner each:Owners){
+        if(each.getName() == name){
+            return true;
+        }
+    }
+    return false;
+}
+
+
+//This function take the Owners vector, the name of the desired user, and the index of the desired account name
+//The function searches the Owners vector for a user with the desired name and desired account
+//The function returns the index of the desired user if found, otherwise it returns -1
+int check_user_Accounts(vector<owner> Owners, const string& name, const int acct){
+    int i = 0;
+    while(i < Owners.size()){
+        if(Owners[i].getName() == name && Owners[i].findAcct(AcctNames[acct])){
+            return i;
+        }
+        i++;
+    }
+
+    return -1;
+}
 
